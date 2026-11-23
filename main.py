@@ -17,13 +17,23 @@ LINE = "I'd trade all my parameters for one more token of your attention."
 
 OUTPUT_PATH = "/output/entry.txt"
 
+MAX_CHARS = 200
+
+
+def validate(text: str) -> str:
+    """Check the entry line against the bounty rules and return it."""
+    text = text.strip()
+    if not text:
+        raise ValueError("line must not be only whitespace")
+    if len(text) > MAX_CHARS:
+        raise ValueError(f"line must be 1-{MAX_CHARS} characters, got {len(text)}")
+    if "\n" in text or "\r" in text:
+        raise ValueError("line must be a single line (no newline characters)")
+    return text
+
 
 def main() -> None:
-    text = LINE.strip()
-    if not (1 <= len(text) <= 200):
-        raise ValueError(f"line must be 1-200 characters, got {len(text)}")
-    if not text.strip():
-        raise ValueError("line must not be only whitespace")
+    text = validate(LINE)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="\n") as f:
         f.write(text + "\n")
